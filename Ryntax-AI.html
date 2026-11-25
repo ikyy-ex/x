@@ -1,0 +1,2298 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>RYNTAX AI — Your Intelligence, Without Limits.</title>
+
+  <!-- Google Fonts: Inter, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            ryntax: {
+              navy: '#0B1020',
+              sidebar: '#111827',
+              surface: '#161F33',
+              blue: '#3978FF',
+              violet: '#875BFF',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Markdown Parser, Sanitizer, Syntax Highlighter & PDF.js -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-theme" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <style>
+    :root {
+      --bg-main: #0B1020;
+      --bg-sidebar: #111827;
+      --bg-surface: rgba(22, 31, 51, 0.78);
+      --bg-surface-solid: #161F33;
+      --bg-input: rgba(17, 24, 39, 0.88);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.15);
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --accent-blue: #3978FF;
+      --accent-violet: #875BFF;
+      --user-bubble: linear-gradient(135deg, rgba(57, 120, 255, 0.22), rgba(135, 91, 255, 0.22));
+      --user-bubble-border: rgba(99, 132, 255, 0.38);
+    }
+
+    html.light {
+      --bg-main: #F8FAFC;
+      --bg-sidebar: #FFFFFF;
+      --bg-surface: rgba(255, 255, 255, 0.88);
+      --bg-surface-solid: #FFFFFF;
+      --bg-input: #FFFFFF;
+      --border-subtle: rgba(15, 23, 42, 0.09);
+      --border-strong: rgba(15, 23, 42, 0.16);
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --user-bubble: linear-gradient(135deg, rgba(57, 120, 255, 0.12), rgba(135, 91, 255, 0.12));
+      --user-bubble-border: rgba(57, 120, 255, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100dvh;
+      width: 100%;
+      overflow: hidden;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Glassmorphism Surface */
+    .glass-surface {
+      background: var(--bg-surface);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .glass-input {
+      background: var(--bg-input);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 10px 35px -10px rgba(0, 0, 0, 0.35);
+    }
+
+    .glass-input:focus-within {
+      border-color: rgba(57, 120, 255, 0.65);
+      box-shadow: 0 0 0 3px rgba(57, 120, 255, 0.15), 0 12px 35px -10px rgba(57, 120, 255, 0.25);
+    }
+
+    /* Brand Gradient Text & Buttons */
+    .brand-gradient-text {
+      background: linear-gradient(135deg, #3978FF 0%, #875BFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-gradient-bg {
+      background: linear-gradient(135deg, #3978FF 0%, #875BFF 100%);
+    }
+
+    .brand-gradient-bg:hover {
+      background: linear-gradient(135deg, #4B85FF 0%, #966EFF 100%);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.45);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Animations */
+    @keyframes pageFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-page-in {
+      animation: pageFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes messageEnter {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-msg {
+      animation: messageEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes pulseOrb {
+      0%, 100% { transform: scale(1); opacity: 0.85; box-shadow: 0 0 18px rgba(57, 120, 255, 0.45); }
+      50% { transform: scale(1.12); opacity: 1; box-shadow: 0 0 28px rgba(135, 91, 255, 0.7); }
+    }
+    .animate-orb {
+      animation: pulseOrb 1.8s infinite ease-in-out;
+    }
+
+    @keyframes dotBounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-5px); opacity: 1; }
+    }
+    .thinking-dot:nth-child(1) { animation: dotBounce 1.3s infinite 0s ease-in-out; }
+    .thinking-dot:nth-child(2) { animation: dotBounce 1.3s infinite 0.16s ease-in-out; }
+    .thinking-dot:nth-child(3) { animation: dotBounce 1.3s infinite 0.32s ease-in-out; }
+
+    /* Markdown Prose Styling */
+    .markdown-body {
+      line-height: 1.7;
+      font-size: 0.95rem;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    .markdown-body p {
+      margin-bottom: 0.85rem;
+    }
+    .markdown-body p:last-child {
+      margin-bottom: 0;
+    }
+    .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-weight: 700;
+      margin-top: 1.25rem;
+      margin-bottom: 0.6rem;
+      line-height: 1.35;
+    }
+    .markdown-body h1 { font-size: 1.35rem; }
+    .markdown-body h2 { font-size: 1.18rem; }
+    .markdown-body h3 { font-size: 1.05rem; }
+    .markdown-body ul, .markdown-body ol {
+      margin: 0.6rem 0 0.9rem 1.35rem;
+    }
+    .markdown-body ul { list-style-type: disc; }
+    .markdown-body ol { list-style-type: decimal; }
+    .markdown-body li {
+      margin-bottom: 0.35rem;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid #3978FF;
+      padding: 0.4rem 0.9rem;
+      margin: 0.85rem 0;
+      background: rgba(57, 120, 255, 0.08);
+      border-radius: 0 0.5rem 0.5rem 0;
+      color: var(--text-secondary);
+    }
+    .markdown-body a {
+      color: #3978FF;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+      display: block;
+      overflow-x: auto;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid var(--border-strong);
+      padding: 0.55rem 0.75rem;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(57, 120, 255, 0.12);
+      font-weight: 600;
+    }
+    .markdown-body :not(pre) > code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.84em;
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.375rem;
+      background: rgba(57, 120, 255, 0.14);
+      color: #60A5FA;
+    }
+    html.light .markdown-body :not(pre) > code {
+      color: #2563EB;
+      background: rgba(57, 120, 255, 0.1);
+    }
+
+    /* Code Block Wrapper */
+    .code-block-wrapper {
+      margin: 0.95rem 0;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #0D1117;
+    }
+    .code-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.85rem;
+      background: #161B22;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+    .code-block-wrapper pre {
+      margin: 0;
+      padding: 0.95rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.84rem;
+      line-height: 1.55;
+      background: #0D1117 !important;
+      color: #E6EDF3;
+    }
+
+    /* Print / PDF Export Styles */
+    #print-container {
+      display: none;
+    }
+    @media print {
+      body {
+        height: auto !important;
+        overflow: visible !important;
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+      }
+      #app-shell, #toast-container, .modal-backdrop {
+        display: none !important;
+      }
+      #print-container {
+        display: block !important;
+        padding: 24px;
+        font-family: 'Inter', sans-serif;
+        color: #0F172A;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-[#3978FF]/30 selection:text-white">
+
+  <!-- Main Application Shell -->
+  <div id="app-shell" class="h-[100dvh] w-full flex overflow-hidden relative animate-page-in">
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebar-backdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-30 hidden lg:hidden transition-opacity duration-200"></div>
+
+    <!-- Left Sidebar -->
+    <aside id="sidebar" style="background-color: var(--bg-sidebar); border-color: var(--border-subtle);" class="fixed lg:static inset-y-0 left-0 z-40 w-[280px] shrink-0 border-r flex flex-col transition-all duration-300 ease-out -translate-x-full lg:translate-x-0">
+      
+      <!-- Sidebar Top: RYNTAX AI Brand & Collapse -->
+      <div class="p-4 flex items-center justify-between border-b" style="border-color: var(--border-subtle);">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="createNewChat()">
+          <!-- Custom Futuristic RYNTAX AI Geometric "R" Logo -->
+          <div class="w-9 h-9 rounded-xl brand-gradient-bg p-[1.5px] shadow-lg shadow-[#3978FF]/25 shrink-0">
+            <div class="w-full h-full rounded-[10.5px] bg-[#0B1020] flex items-center justify-center">
+              <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="RYNTAX AI Logo">
+                <defs>
+                  <linearGradient id="ryntaxLogoGrad" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#3978FF"/>
+                    <stop offset="100%" stop-color="#875BFF"/>
+                  </linearGradient>
+                </defs>
+                <path d="M7 5H19.5C23.0899 5 26 7.91015 26 11.5C26 14.3578 24.1558 16.7847 21.5925 17.6561L26.5 27H20.8L16.4 18.2H12.2V27H7V5ZM12.2 9.5V14H18.8C20.1807 14 21.3 12.8807 21.3 11.5C21.3 10.1193 20.1807 9.5 18.8 9.5H12.2Z" fill="url(#ryntaxLogoGrad)"/>
+                <circle cx="25.5" cy="6.5" r="2" fill="#3978FF"/>
+              </svg>
+            </div>
+          </div>
+          <div class="min-w-0">
+            <div class="font-display font-extrabold text-base tracking-tight flex items-center gap-1.5">
+              <span>RYNTAX</span>
+              <span class="brand-gradient-text">AI</span>
+            </div>
+            <p class="text-[10px] truncate" style="color: var(--text-secondary);">Your Intelligence, Without Limits.</p>
+          </div>
+        </div>
+
+        <button onclick="toggleSidebar(false)" class="lg:hidden p-2 rounded-lg hover:bg-white/5 transition-colors" title="Tutup Sidebar" aria-label="Tutup Sidebar">
+          <svg class="w-5 h-5" style="color: var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- New Chat & Search -->
+      <div class="p-3 space-y-2.5">
+        <button onclick="createNewChat()" class="w-full py-2.5 px-3.5 rounded-xl brand-gradient-bg text-white font-medium text-sm flex items-center justify-center gap-2 shadow-md shadow-[#3978FF]/20 hover:shadow-lg hover:shadow-[#3978FF]/30 transition-all active:scale-[0.99]">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
+          </svg>
+          <span data-i18n="newChat">New Chat</span>
+        </button>
+
+        <!-- Search Chat History -->
+        <div class="relative">
+          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style="color: var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+          </svg>
+          <input id="sidebar-search" type="text" oninput="renderChatList()" placeholder="Cari riwayat percakapan..." data-i18n-placeholder="searchPlaceholder"
+            style="background-color: var(--bg-main); border-color: var(--border-subtle); color: var(--text-primary);"
+            class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border focus:outline-none focus:border-[#3978FF] transition-colors" />
+        </div>
+      </div>
+
+      <!-- Conversation History List -->
+      <div class="px-3 pt-1 pb-1.5 flex items-center justify-between">
+        <span class="text-[11px] font-semibold uppercase tracking-wider" style="color: var(--text-secondary);" data-i18n="recentChats">Riwayat Percakapan</span>
+        <span id="chat-count-badge" class="text-[10px] px-1.5 py-0.5 rounded-full bg-[#3978FF]/15 text-[#3978FF] font-medium">0</span>
+      </div>
+
+      <div id="chat-history-list" class="flex-1 overflow-y-auto px-2.5 space-y-1 pb-3">
+        <!-- Populated dynamically via JS -->
+      </div>
+
+      <!-- Sidebar Footer: Settings & User Profile -->
+      <div class="p-3 border-t space-y-2" style="border-color: var(--border-subtle);">
+        <button onclick="openSettingsModal()" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium hover:bg-[#3978FF]/10 transition-colors" style="color: var(--text-secondary);">
+          <svg class="w-4 h-4 text-[#3978FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span data-i18n="settings">Pengaturan & Model AI</span>
+        </button>
+
+        <!-- User Profile Card -->
+        <div onclick="openAuthOrProfileModal()" class="p-2.5 rounded-xl glass-surface cursor-pointer hover:border-[#3978FF]/40 transition-all flex items-center gap-2.5">
+          <div id="sidebar-avatar" class="w-8 h-8 rounded-lg brand-gradient-bg text-white font-bold text-xs flex items-center justify-center shrink-0">
+            G
+          </div>
+          <div class="min-w-0 flex-1">
+            <div id="sidebar-user-name" class="text-xs font-semibold truncate">Guest Explorer</div>
+            <div id="sidebar-user-status" class="text-[10px] truncate text-[#3978FF]" data-i18n="signInSync">Masuk untuk sinkronisasi cloud</div>
+          </div>
+          <svg class="w-4 h-4 shrink-0" style="color: var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Main Workspace -->
+    <main class="flex-1 flex flex-col min-w-0 h-full relative">
+
+      <!-- Ambient Futuristic Radial Glow -->
+      <div class="pointer-events-none absolute inset-0 overflow-hidden z-0">
+        <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[540px] h-[280px] rounded-full opacity-20 blur-[110px]" style="background: radial-gradient(circle, #3978FF, #875BFF);"></div>
+      </div>
+
+      <!-- Top Header Bar -->
+      <header style="border-color: var(--border-subtle);" class="h-14 px-3 sm:px-5 border-b flex items-center justify-between gap-2 z-20 shrink-0 backdrop-blur-md">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+          <!-- Hamburger Menu Button -->
+          <button onclick="toggleSidebar()" class="p-2 rounded-xl hover:bg-[#3978FF]/10 transition-colors shrink-0" title="Toggle Sidebar" aria-label="Toggle Sidebar">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10"/>
+            </svg>
+          </button>
+
+          <!-- Model Selector Dropdown -->
+          <div class="relative">
+            <button id="model-dropdown-btn" onclick="toggleModelMenu(event)" class="flex items-center gap-2 px-3 py-1.5 rounded-xl glass-surface hover:border-[#3978FF]/50 transition-all text-xs sm:text-sm font-medium">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="active-model-label" class="truncate max-w-[135px] sm:max-w-[200px]">Gemini 3 Flash</span>
+              <svg class="w-3.5 h-3.5 opacity-70 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div id="model-dropdown-menu" style="background-color: var(--bg-surface-solid); border-color: var(--border-strong);" class="hidden absolute left-0 mt-2 w-72 rounded-2xl border shadow-2xl p-1.5 z-50">
+              <div class="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider" style="color: var(--text-secondary);">Pilih Mesin Model AI</div>
+              
+              <button onclick="selectModel('gemini-3-flash-preview', 'Gemini 3 Flash')" class="model-option w-full text-left p-2.5 rounded-xl hover:bg-[#3978FF]/15 transition-colors flex items-start justify-between gap-2" data-model="gemini-3-flash-preview">
+                <div>
+                  <div class="text-xs font-semibold flex items-center gap-1.5">
+                    <span>Gemini 3 Flash</span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded bg-[#3978FF]/20 text-[#3978FF]">Recommended</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5" style="color: var(--text-secondary);">Cepat, multimodal, & penalaran cerdas</div>
+                </div>
+                <span class="model-check text-[#3978FF] font-bold text-sm">✓</span>
+              </button>
+
+              <button onclick="selectModel('gemini-2.5-flash', 'Gemini 2.5 Flash')" class="model-option w-full text-left p-2.5 rounded-xl hover:bg-[#3978FF]/15 transition-colors flex items-start justify-between gap-2" data-model="gemini-2.5-flash">
+                <div>
+                  <div class="text-xs font-semibold">Gemini 2.5 Flash</div>
+                  <div class="text-[11px] mt-0.5" style="color: var(--text-secondary);">Respons kilat untuk tugas harian</div>
+                </div>
+                <span class="model-check hidden text-[#3978FF] font-bold text-sm">✓</span>
+              </button>
+
+              <button onclick="selectModel('gemini-2.5-pro', 'Gemini 2.5 Pro')" class="model-option w-full text-left p-2.5 rounded-xl hover:bg-[#3978FF]/15 transition-colors flex items-start justify-between gap-2" data-model="gemini-2.5-pro">
+                <div>
+                  <div class="text-xs font-semibold flex items-center gap-1.5">
+                    <span>Gemini 2.5 Pro</span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded bg-[#875BFF]/20 text-[#875BFF]">Pro</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5" style="color: var(--text-secondary);">Analisis mendalam, coding kompleks & logika</div>
+                </div>
+                <span class="model-check hidden text-[#3978FF] font-bold text-sm">✓</span>
+              </button>
+
+              <button onclick="selectModel('gemini-2.0-flash', 'Gemini 2.0 Flash')" class="model-option w-full text-left p-2.5 rounded-xl hover:bg-[#3978FF]/15 transition-colors flex items-start justify-between gap-2" data-model="gemini-2.0-flash">
+                <div>
+                  <div class="text-xs font-semibold">Gemini 2.0 Flash</div>
+                  <div class="text-[11px] mt-0.5" style="color: var(--text-secondary);">Generasi stabil & efisien</div>
+                </div>
+                <span class="model-check hidden text-[#3978FF] font-bold text-sm">✓</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Header Controls -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <!-- Share Conversation -->
+          <button onclick="shareConversation()" class="p-2 rounded-xl glass-surface hover:border-[#3978FF]/50 transition-all" title="Bagikan Percakapan" aria-label="Bagikan Percakapan">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+            </svg>
+          </button>
+
+          <!-- Export Menu -->
+          <div class="relative">
+            <button onclick="toggleExportMenu(event)" class="p-2 rounded-xl glass-surface hover:border-[#3978FF]/50 transition-all flex items-center gap-1 text-xs font-medium" title="Export Percakapan" aria-label="Export Percakapan">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              <span class="hidden md:inline">Export</span>
+            </button>
+
+            <div id="export-dropdown-menu" style="background-color: var(--bg-surface-solid); border-color: var(--border-strong);" class="hidden absolute right-0 mt-2 w-48 rounded-2xl border shadow-2xl p-1.5 z-50">
+              <button onclick="exportChatTXT()" class="w-full text-left px-3 py-2 rounded-xl text-xs hover:bg-[#3978FF]/15 transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#3978FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span>Download .TXT</span>
+              </button>
+              <button onclick="exportChatPDF()" class="w-full text-left px-3 py-2 rounded-xl text-xs hover:bg-[#875BFF]/15 transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#875BFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                </svg>
+                <span>Export / Print PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Theme Switcher -->
+          <button onclick="toggleTheme()" class="p-2 rounded-xl glass-surface hover:border-[#3978FF]/50 transition-all" title="Ubah Tema (Dark / Light)" aria-label="Ubah Tema">
+            <svg id="icon-sun" class="w-4 h-4 text-amber-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <svg id="icon-moon" class="w-4 h-4 text-[#875BFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+          </button>
+
+          <!-- Top Auth Button -->
+          <button id="header-auth-btn" onclick="openAuthOrProfileModal()" class="px-3 py-1.5 rounded-xl brand-gradient-bg text-white text-xs font-semibold shadow-sm hover:opacity-95 transition-all">
+            Masuk
+          </button>
+        </div>
+      </header>
+
+      <!-- Chat Scroll Viewport -->
+      <div id="chat-scroll-container" class="flex-1 overflow-y-auto px-3 sm:px-6 py-4 z-10 scroll-smooth">
+        <div class="max-w-3xl mx-auto w-full">
+
+          <!-- Welcome Screen (Displayed when chat is empty) -->
+          <div id="welcome-screen" class="py-6 sm:py-12 flex flex-col items-center text-center animate-msg">
+            <!-- Glowing Futuristic Emblem -->
+            <div class="relative mb-6">
+              <div class="absolute inset-0 rounded-3xl brand-gradient-bg blur-xl opacity-45 animate-pulse"></div>
+              <div class="relative w-16 h-16 sm:w-20 sm:h-20 rounded-3xl brand-gradient-bg p-[2px] shadow-2xl">
+                <div class="w-full h-full rounded-[22px] bg-[#0B1020] flex items-center justify-center">
+                  <svg width="42" height="42" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id="welcomeRGrad" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#3978FF"/>
+                        <stop offset="100%" stop-color="#875BFF"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M7 5H19.5C23.0899 5 26 7.91015 26 11.5C26 14.3578 24.1558 16.7847 21.5925 17.6561L26.5 27H20.8L16.4 18.2H12.2V27H7V5ZM12.2 9.5V14H18.8C20.1807 14 21.3 12.8807 21.3 11.5C21.3 10.1193 20.1807 9.5 18.8 9.5H12.2Z" fill="url(#welcomeRGrad)"/>
+                    <circle cx="25.5" cy="6.5" r="2.2" fill="#3978FF"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-surface text-[11px] font-medium mb-4" style="color: var(--text-secondary);">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#3978FF]"></span>
+              <span>RYNTAX AI • Your Intelligence, Without Limits.</span>
+            </div>
+
+            <h1 class="font-display font-extrabold text-2xl sm:text-4xl tracking-tight mb-2.5" data-i18n="welcomeTitle">
+              Selamat datang di <span class="brand-gradient-text">Ryntax AI</span>
+            </h1>
+            <p class="text-sm sm:text-base max-w-xl mb-8" style="color: var(--text-secondary);" data-i18n="welcomeSubtitle">
+              Bagaimana saya bisa membantu Anda hari ini?
+            </p>
+
+            <!-- 4 Starter Prompt Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
+              <button onclick="useStarterPrompt('writing', 'Buatkan kerangka dan paragraf pembuka artikel profesional tentang bagaimana kecerdasan buatan mengubah cara kerja tim modern.')" class="group p-4 rounded-2xl glass-surface hover:border-[#3978FF]/60 transition-all duration-200 hover:-translate-y-0.5">
+                <div class="flex items-center gap-2.5 mb-1.5">
+                  <div class="w-8 h-8 rounded-xl bg-[#3978FF]/15 text-[#3978FF] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  </div>
+                  <span class="font-semibold text-xs sm:text-sm">AI Writing Assistant</span>
+                </div>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Buatkan kerangka artikel profesional tentang dampak AI pada produktivitas modern.</p>
+              </button>
+
+              <button onclick="useStarterPrompt('coding', 'Buatkan fungsi Python dan JavaScript modern untuk memvalidasi format email serta jelaskan kompleksitas waktunya.')" class="group p-4 rounded-2xl glass-surface hover:border-[#875BFF]/60 transition-all duration-200 hover:-translate-y-0.5">
+                <div class="flex items-center gap-2.5 mb-1.5">
+                  <div class="w-8 h-8 rounded-xl bg-[#875BFF]/15 text-[#875BFF] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                  </div>
+                  <span class="font-semibold text-xs sm:text-sm">AI Coding Assistant</span>
+                </div>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Tulis kode Python & JavaScript bersih beserta penjelasan struktur & optimasinya.</p>
+              </button>
+
+              <button onclick="useStarterPrompt('summarizer', 'Jelaskan cara merangkum dokumen atau laporan panjang menjadi poin eksekutif yang padat, akurat, dan mudah dipahami.')" class="group p-4 rounded-2xl glass-surface hover:border-[#3978FF]/60 transition-all duration-200 hover:-translate-y-0.5">
+                <div class="flex items-center gap-2.5 mb-1.5">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  </div>
+                  <span class="font-semibold text-xs sm:text-sm">AI Summarizer</span>
+                </div>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Ringkas artikel panjang, PDF, atau catatan rapat menjadi poin-poin inti.</p>
+              </button>
+
+              <button onclick="useStarterPrompt('translator', 'Terjemahkan kalimat bisnis berikut ke dalam Bahasa Inggris profesional dan Bahasa Jepang formal: \"Terima kasih atas kerja sama strategis kita bulan ini.\"')" class="group p-4 rounded-2xl glass-surface hover:border-[#875BFF]/60 transition-all duration-200 hover:-translate-y-0.5">
+                <div class="flex items-center gap-2.5 mb-1.5">
+                  <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+                  </div>
+                  <span class="font-semibold text-xs sm:text-sm">AI Translator</span>
+                </div>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Terjemahkan teks lintas bahasa dengan nuansa konteks yang alami & akurat.</p>
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Messages Container -->
+          <div id="messages-list" class="space-y-6 pb-4 hidden"></div>
+
+        </div>
+      </div>
+
+      <!-- Sticky Bottom Input Dock -->
+      <div class="px-3 sm:px-6 pb-3 pt-1.5 z-20 shrink-0">
+        <div class="max-w-3xl mx-auto w-full space-y-2">
+
+          <!-- Assistant Mode Selector Pills -->
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+            <button onclick="setAssistantMode('general')" class="mode-pill px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all brand-gradient-bg text-white shadow-xs" data-mode="general">
+              ✨ General
+            </button>
+            <button onclick="setAssistantMode('writing')" class="mode-pill px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all glass-surface hover:border-[#3978FF]/50" data-mode="writing">
+              ✍️ Writing
+            </button>
+            <button onclick="setAssistantMode('coding')" class="mode-pill px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all glass-surface hover:border-[#3978FF]/50" data-mode="coding">
+              💻 Coding
+            </button>
+            <button onclick="setAssistantMode('translator')" class="mode-pill px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all glass-surface hover:border-[#3978FF]/50" data-mode="translator">
+              🌐 Translator
+            </button>
+            <button onclick="setAssistantMode('summarizer')" class="mode-pill px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all glass-surface hover:border-[#3978FF]/50" data-mode="summarizer">
+              📑 Summarizer
+            </button>
+            <button onclick="setAssistantMode('analysis')" class="mode-pill px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all glass-surface hover:border-[#3978FF]/50" data-mode="analysis">
+              🔍 Doc & Image
+            </button>
+          </div>
+
+          <!-- Attachment Preview Chips Tray -->
+          <div id="attachment-tray" class="hidden flex flex-wrap gap-2"></div>
+
+          <!-- Main Input Container -->
+          <div class="glass-input rounded-2xl p-2 sm:p-2.5 transition-all">
+            <textarea id="chat-input" rows="1" placeholder="Tanyakan apa saja pada Ryntax AI..." data-i18n-placeholder="inputPlaceholder"
+              oninput="autoResizeTextarea(this)" onkeydown="handleInputKeydown(event)"
+              class="w-full bg-transparent resize-none border-0 focus:outline-none text-sm sm:text-[15px] px-2 py-1 max-h-40 leading-relaxed"
+              style="color: var(--text-primary);"></textarea>
+
+            <!-- Action Toolbar inside Input Box -->
+            <div class="flex items-center justify-between pt-1.5 mt-1 border-t" style="border-color: var(--border-subtle);">
+              <div class="flex items-center gap-1">
+                <!-- Hidden File Inputs -->
+                <input type="file" id="image-upload-input" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="handleImageUpload(event)" />
+                <input type="file" id="doc-upload-input" accept=".txt,.md,.csv,.json,.js,.py,.html,.css,.pdf" class="hidden" onchange="handleDocUpload(event)" />
+
+                <!-- Upload Image Button -->
+                <button type="button" onclick="document.getElementById('image-upload-input').click()" class="p-2 rounded-xl hover:bg-[#3978FF]/15 transition-colors flex items-center gap-1.5 text-xs" style="color: var(--text-secondary);" title="Upload Gambar (PNG, JPG, WEBP)">
+                  <svg class="w-4 h-4 text-[#3978FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <span class="hidden sm:inline">Gambar</span>
+                </button>
+
+                <!-- Upload Document Button -->
+                <button type="button" onclick="document.getElementById('doc-upload-input').click()" class="p-2 rounded-xl hover:bg-[#875BFF]/15 transition-colors flex items-center gap-1.5 text-xs" style="color: var(--text-secondary);" title="Upload Dokumen (.pdf, .txt, .md, .csv, .json, kode)">
+                  <svg class="w-4 h-4 text-[#875BFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                  </svg>
+                  <span class="hidden sm:inline">Dokumen</span>
+                </button>
+
+                <!-- Voice Input Microphone Button (Visible if browser supports SpeechRecognition) -->
+                <button type="button" id="mic-btn" onclick="toggleVoiceInput()" class="hidden p-2 rounded-xl hover:bg-rose-500/15 transition-colors flex items-center gap-1.5 text-xs" style="color: var(--text-secondary);" title="Input Suara">
+                  <svg id="mic-icon" class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                  </svg>
+                  <span id="mic-status-text" class="hidden sm:inline">Suara</span>
+                </button>
+              </div>
+
+              <!-- Send / Stop Button -->
+              <div class="flex items-center gap-2">
+                <span class="hidden md:inline text-[11px]" style="color: var(--text-secondary);">Enter kirim • Shift+Enter baris baru</span>
+                <button type="button" id="send-stop-btn" onclick="handleSendOrStop()" class="h-9 px-4 rounded-xl brand-gradient-bg text-white font-semibold text-xs flex items-center gap-1.5 shadow-md shadow-[#3978FF]/25 hover:shadow-lg transition-all active:scale-95">
+                  <span id="send-btn-label" data-i18n="send">Kirim</span>
+                  <svg id="send-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                  <svg id="stop-icon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24">
+                    <rect x="6" y="6" width="12" height="12" rx="2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-center text-[10px]" style="color: var(--text-secondary);" data-i18n="disclaimer">
+            RYNTAX AI dapat membuat kekeliruan. Periksa kembali informasi penting.
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Printable PDF Export View -->
+  <div id="print-container"></div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none max-w-xs w-full"></div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Authentication Modal (Login / Register / Forgot Password) -->
+  <div id="auth-modal" class="modal-backdrop fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div style="background-color: var(--bg-surface-solid); border-color: var(--border-strong);" class="w-full max-w-md rounded-3xl border p-6 shadow-2xl animate-msg relative">
+      <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 p-2 rounded-xl hover:bg-white/5" style="color: var(--text-secondary);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-xl brand-gradient-bg flex items-center justify-center text-white font-display font-extrabold text-lg">R</div>
+        <div>
+          <h2 id="auth-modal-title" class="font-display font-bold text-lg">Masuk ke RYNTAX AI</h2>
+          <p id="auth-modal-subtitle" class="text-xs" style="color: var(--text-secondary);">Sinkronkan riwayat percakapan Anda di semua perangkat.</p>
+        </div>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="grid grid-cols-2 gap-1 p-1 rounded-xl mb-4" style="background-color: var(--bg-main);">
+        <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-lg text-xs font-semibold brand-gradient-bg text-white transition-all">Login</button>
+        <button id="tab-register" onclick="switchAuthTab('register')" class="py-2 rounded-lg text-xs font-semibold transition-all" style="color: var(--text-secondary);">Register</button>
+      </div>
+
+      <div id="auth-error-box" class="hidden mb-3 p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs"></div>
+      <div id="auth-success-box" class="hidden mb-3 p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs"></div>
+
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
+        <div id="auth-name-field" class="hidden">
+          <label class="block text-xs font-medium mb-1" style="color: var(--text-secondary);">Nama Lengkap</label>
+          <input type="text" id="auth-name" placeholder="Contoh: Raka Pratama" style="background-color: var(--bg-main); border-color: var(--border-subtle);" class="w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:border-[#3978FF]" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium mb-1" style="color: var(--text-secondary);">Email</label>
+          <input type="email" id="auth-email" required placeholder="nama@email.com" style="background-color: var(--bg-main); border-color: var(--border-subtle);" class="w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:border-[#3978FF]" />
+        </div>
+
+        <div id="auth-password-field">
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-medium" style="color: var(--text-secondary);">Password</label>
+            <button type="button" onclick="switchAuthTab('forgot')" class="text-[11px] text-[#3978FF] hover:underline">Lupa password?</button>
+          </div>
+          <input type="password" id="auth-password" placeholder="Minimal 6 karakter" style="background-color: var(--bg-main); border-color: var(--border-subtle);" class="w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:border-[#3978FF]" />
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="w-full py-2.5 rounded-xl brand-gradient-bg text-white font-semibold text-sm shadow-lg shadow-[#3978FF]/25 hover:opacity-95 transition-all">
+          Masuk Sekarang
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. User Profile Modal -->
+  <div id="profile-modal" class="modal-backdrop fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div style="background-color: var(--bg-surface-solid); border-color: var(--border-strong);" class="w-full max-w-md rounded-3xl border p-6 shadow-2xl animate-msg relative">
+      <button onclick="closeModal('profile-modal')" class="absolute top-4 right-4 p-2 rounded-xl hover:bg-white/5" style="color: var(--text-secondary);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <h2 class="font-display font-bold text-lg mb-4">Profil & Akun Pengguna</h2>
+
+      <div class="flex items-center gap-3.5 p-3.5 rounded-2xl glass-surface mb-4">
+        <div id="profile-modal-avatar" class="w-12 h-12 rounded-2xl brand-gradient-bg text-white font-bold text-lg flex items-center justify-center">U</div>
+        <div class="min-w-0 flex-1">
+          <div id="profile-modal-name" class="font-semibold text-sm truncate">User</div>
+          <div id="profile-modal-email" class="text-xs truncate" style="color: var(--text-secondary);">user@example.com</div>
+          <div id="profile-modal-uid" class="text-[10px] font-mono truncate mt-0.5 text-[#3978FF]"></div>
+        </div>
+      </div>
+
+      <form onsubmit="handleUpdateProfile(event)" class="space-y-3 mb-4">
+        <div>
+          <label class="block text-xs font-medium mb-1" style="color: var(--text-secondary);">Ubah Nama Tampilan</label>
+          <div class="flex gap-2">
+            <input type="text" id="profile-edit-name" required style="background-color: var(--bg-main); border-color: var(--border-subtle);" class="flex-1 px-3.5 py-2 rounded-xl border text-sm focus:outline-none focus:border-[#3978FF]" />
+            <button type="submit" class="px-4 py-2 rounded-xl brand-gradient-bg text-white text-xs font-semibold">Simpan</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="pt-3 border-t flex justify-between items-center" style="border-color: var(--border-subtle);">
+        <span class="text-xs" style="color: var(--text-secondary);">Sesi aktif tersimpan aman</span>
+        <button onclick="handleLogout()" class="px-4 py-2 rounded-xl bg-rose-500/15 text-rose-400 hover:bg-rose-500/25 text-xs font-semibold transition-colors">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Settings & Model Configuration Modal -->
+  <div id="settings-modal" class="modal-backdrop fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div style="background-color: var(--bg-surface-solid); border-color: var(--border-strong);" class="w-full max-w-md rounded-3xl border p-6 shadow-2xl animate-msg relative">
+      <button onclick="closeModal('settings-modal')" class="absolute top-4 right-4 p-2 rounded-xl hover:bg-white/5" style="color: var(--text-secondary);">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <h2 class="font-display font-bold text-lg mb-1">Pengaturan RYNTAX AI</h2>
+      <p class="text-xs mb-5" style="color: var(--text-secondary);">Sesuaikan tampilan, bahasa, dan mesin kecerdasan AI.</p>
+
+      <div class="space-y-4">
+        <!-- Theme Preference -->
+        <div class="flex items-center justify-between p-3 rounded-2xl glass-surface">
+          <div>
+            <div class="text-xs font-semibold">Tema Antarmuka</div>
+            <div class="text-[11px]" style="color: var(--text-secondary);">Pilih Dark Navy atau Light Mode</div>
+          </div>
+          <button onclick="toggleTheme()" class="px-3 py-1.5 rounded-xl brand-gradient-bg text-white text-xs font-semibold">
+            <span id="settings-theme-label">Dark Mode</span>
+          </button>
+        </div>
+
+        <!-- Language Preference -->
+        <div class="flex items-center justify-between p-3 rounded-2xl glass-surface">
+          <div>
+            <div class="text-xs font-semibold">Bahasa / Language</div>
+            <div class="text-[11px]" style="color: var(--text-secondary);">Bahasa antarmuka & respons default</div>
+          </div>
+          <select id="settings-lang-select" onchange="setLanguage(this.value)" style="background-color: var(--bg-main); border-color: var(--border-subtle);" class="px-3 py-1.5 rounded-xl border text-xs font-medium focus:outline-none focus:border-[#3978FF]">
+            <option value="id">Bahasa Indonesia</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+
+        <!-- AI Model Configuration -->
+        <div class="p-3 rounded-2xl glass-surface space-y-2">
+          <div class="text-xs font-semibold">Model AI Aktif</div>
+          <select id="settings-model-select" onchange="selectModelFromSettings(this.value)" style="background-color: var(--bg-main); border-color: var(--border-subtle);" class="w-full px-3 py-2 rounded-xl border text-xs font-medium focus:outline-none focus:border-[#3978FF]">
+            <option value="gemini-3-flash-preview">Gemini 3 Flash (Recommended)</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+            <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          </select>
+          <p class="text-[11px]" style="color: var(--text-secondary);">API key dikelola aman di lingkungan runtime tanpa eksposur klien.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Custom Confirmation Modal (Replaces window.confirm) -->
+  <div id="confirm-modal" class="modal-backdrop fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div style="background-color: var(--bg-surface-solid); border-color: var(--border-strong);" class="w-full max-w-sm rounded-3xl border p-6 shadow-2xl animate-msg">
+      <h3 id="confirm-title" class="font-display font-bold text-base mb-1.5">Konfirmasi</h3>
+      <p id="confirm-message" class="text-xs mb-5 leading-relaxed" style="color: var(--text-secondary);">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
+      <div class="flex justify-end gap-2">
+        <button onclick="closeModal('confirm-modal')" class="px-4 py-2 rounded-xl glass-surface text-xs font-medium hover:bg-white/5">Batal</button>
+        <button id="confirm-yes-btn" class="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold transition-colors">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== APPLICATION LOGIC & FIREBASE ==================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth,
+      signInAnonymously,
+      signInWithCustomToken,
+      onAuthStateChanged,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail,
+      updateProfile,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      setDoc,
+      deleteDoc,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Configure PDF.js Worker
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    // Configure Marked.js with Highlight.js
+    marked.setOptions({
+      breaks: true,
+      gfm: true,
+      highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(code, { language: lang }).value;
+          } catch (_) {}
+        }
+        return hljs.highlightAuto(code).value;
+      }
+    });
+
+    // ==================== STATE MANAGEMENT ====================
+    const state = {
+      theme: 'dark',
+      language: 'id',
+      model: 'gemini-3-flash-preview',
+      modelLabel: 'Gemini 3 Flash',
+      assistantMode: 'general',
+      chats: [], // Array of { id, title, updatedAt, messages: [] }
+      activeChatId: null,
+      attachments: {
+        image: null, // { name, mimeType, base64, previewUrl }
+        doc: null    // { name, content, charCount }
+      },
+      isGenerating: false,
+      abortController: null,
+      editingMessageIndex: null,
+      isRecording: false,
+      recognition: null,
+      authTab: 'login',
+      user: null,
+      db: null,
+      auth: null,
+      appId: typeof __app_id !== 'undefined' ? __app_id : 'ryntax-ai-default',
+      unsubscribeChats: null
+    };
+
+    const SYSTEM_PROMPTS = {
+      general: {
+        id: "Kamu adalah RYNTAX AI ('Your Intelligence, Without Limits.'), asisten kecerdasan buatan modern yang cerdas, ramah, akurat, dan terstruktur. Jawab dalam Bahasa Indonesia yang jelas kecuali pengguna meminta bahasa lain. Gunakan format Markdown yang rapi.",
+        en: "You are RYNTAX AI ('Your Intelligence, Without Limits.'), a modern, intelligent, accurate, and well-structured AI assistant. Respond in clear English unless asked otherwise. Use clean Markdown formatting."
+      },
+      writing: {
+        id: "Kamu adalah RYNTAX AI dalam mode AI Writing Assistant. Bantu pengguna menulis artikel, esai, copywriting, email profesional, atau cerita kreatif dengan gaya bahasa memikat, tata bahasa sempurna, dan struktur yang kuat.",
+        en: "You are RYNTAX AI in AI Writing Assistant mode. Help users craft articles, essays, copywriting, professional emails, or creative pieces with compelling style, impeccable grammar, and strong structure."
+      },
+      coding: {
+        id: "Kamu adalah RYNTAX AI dalam mode AI Coding Assistant. Berikan solusi pemrograman yang bersih, modern, aman, dan teroptimasi. Selalu sertakan blok kode dengan nama bahasa pemrograman yang tepat serta penjelasan singkat cara kerjanya.",
+        en: "You are RYNTAX AI in AI Coding Assistant mode. Provide clean, modern, secure, and optimized code solutions. Always include properly tagged code blocks and concise explanations."
+      },
+      translator: {
+        id: "Kamu adalah RYNTAX AI dalam mode AI Translator. Terjemahkan teks dengan akurasi tinggi, mempertahankan makna, nada, dan nuansa budaya alami. Jika relevan, berikan opsi terjemahan formal dan kasual.",
+        en: "You are RYNTAX AI in AI Translator mode. Translate text with high accuracy, preserving meaning, tone, and natural cultural nuance. Provide formal and casual variations when helpful."
+      },
+      summarizer: {
+        id: "Kamu adalah RYNTAX AI dalam mode AI Summarizer. Rangkum teks atau dokumen panjang menjadi ringkasan eksekutif yang padat, terstruktur dengan poin-poin utama (bullet points), dan kesimpulan yang mudah dipahami.",
+        en: "You are RYNTAX AI in AI Summarizer mode. Distill long texts or documents into concise executive summaries with clear bullet points and actionable takeaways."
+      },
+      analysis: {
+        id: "Kamu adalah RYNTAX AI dalam mode Document & Image Analyzer. Analisis gambar atau isi dokumen yang dilampirkan pengguna secara mendalam, teliti, objektif, dan terstruktur.",
+        en: "You are RYNTAX AI in Document & Image Analyzer mode. Analyze user-attached images or document contents thoroughly, accurately, and in a well-structured format."
+      }
+    };
+
+    const I18N = {
+      id: {
+        newChat: "New Chat",
+        searchPlaceholder: "Cari riwayat percakapan...",
+        recentChats: "Riwayat Percakapan",
+        settings: "Pengaturan & Model AI",
+        signInSync: "Masuk untuk sinkronisasi cloud",
+        welcomeTitle: 'Selamat datang di <span class="brand-gradient-text">Ryntax AI</span>',
+        welcomeSubtitle: "Bagaimana saya bisa membantu Anda hari ini?",
+        inputPlaceholder: "Tanyakan apa saja pada Ryntax AI...",
+        send: "Kirim",
+        disclaimer: "RYNTAX AI dapat membuat kekeliruan. Periksa kembali informasi penting."
+      },
+      en: {
+        newChat: "New Chat",
+        searchPlaceholder: "Search chat history...",
+        recentChats: "Chat History",
+        settings: "Settings & AI Model",
+        signInSync: "Sign in to sync across devices",
+        welcomeTitle: 'Welcome to <span class="brand-gradient-text">Ryntax AI</span>',
+        welcomeSubtitle: "How can I help you today?",
+        inputPlaceholder: "Ask Ryntax AI anything...",
+        send: "Send",
+        disclaimer: "RYNTAX AI can make mistakes. Please verify important information."
+      }
+    };
+
+    // ==================== INITIALIZE FIREBASE & AUTH ====================
+    async function initFirebase() {
+      try {
+        if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+          updateUserUI(null);
+          return;
+        }
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        state.auth = getAuth(app);
+        state.db = getFirestore(app);
+
+        // RULE 3: Authenticate FIRST before attaching Firestore listeners
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(state.auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(state.auth);
+        }
+
+        onAuthStateChanged(state.auth, (user) => {
+          state.user = user;
+          updateUserUI(user);
+          if (user) {
+            subscribeToUserChats(user.uid);
+          } else {
+            if (state.unsubscribeChats) state.unsubscribeChats();
+            state.chats = [];
+            renderChatList();
+          }
+        });
+      } catch (err) {
+        // Fallback smoothly to in-memory session if Firebase config isn't active
+        updateUserUI(null);
+      }
+    }
+
+    function subscribeToUserChats(userId) {
+      if (!state.db || !userId) return;
+      if (state.unsubscribeChats) state.unsubscribeChats();
+
+      // RULE 1 & RULE 2: Strict path /artifacts/{appId}/users/{userId}/chats, simple collection query
+      const chatsCol = collection(state.db, 'artifacts', state.appId, 'users', userId, 'chats');
+      state.unsubscribeChats = onSnapshot(
+        chatsCol,
+        (snapshot) => {
+          const loaded = [];
+          snapshot.forEach((docSnap) => {
+            loaded.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          // Sort in JS memory by updatedAt descending
+          loaded.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+          state.chats = loaded;
+          renderChatList();
+          if (state.activeChatId) {
+            renderActiveConversation();
+          }
+        },
+        (error) => {
+          showToast("Sinkronisasi riwayat tertunda.", "warning");
+        }
+      );
+    }
+
+    async function persistChatToFirestore(chatObj) {
+      if (!state.db || !state.user) return;
+      try {
+        // Strip raw base64 images before saving to Firestore to stay well below 1MB limit
+        const sanitizedMessages = chatObj.messages.map((m) => ({
+          role: m.role,
+          text: m.text,
+          timestamp: m.timestamp || Date.now(),
+          model: m.model || null,
+          hasImage: Boolean(m.hasImage || m.imagePreview),
+          imageName: m.imageName || null,
+          docName: m.docName || null
+        }));
+
+        const chatRef = doc(state.db, 'artifacts', state.appId, 'users', state.user.uid, 'chats', chatObj.id);
+        await setDoc(chatRef, {
+          title: chatObj.title,
+          updatedAt: chatObj.updatedAt,
+          messages: sanitizedMessages
+        }, { merge: true });
+      } catch (err) {
+        // Keep in-memory state working even if cloud write fails
+      }
+    }
+
+    async function deleteChatFromFirestore(chatId) {
+      if (!state.db || !state.user) return;
+      try {
+        const chatRef = doc(state.db, 'artifacts', state.appId, 'users', state.user.uid, 'chats', chatId);
+        await deleteDoc(chatRef);
+      } catch (err) {
+        // Ignore if offline
+      }
+    }
+
+    function updateUserUI(user) {
+      const avatarEl = document.getElementById('sidebar-avatar');
+      const nameEl = document.getElementById('sidebar-user-name');
+      const statusEl = document.getElementById('sidebar-user-status');
+      const headerBtn = document.getElementById('header-auth-btn');
+
+      if (user && !user.isAnonymous) {
+        const displayName = user.displayName || user.email?.split('@')[0] || 'RYNTAX User';
+        const initials = displayName.substring(0, 2).toUpperCase();
+        avatarEl.textContent = initials;
+        nameEl.textContent = displayName;
+        statusEl.textContent = user.email || 'Cloud Sync Active';
+        headerBtn.textContent = displayName.split(' ')[0];
+      } else {
+        avatarEl.textContent = 'G';
+        nameEl.textContent = 'Guest Mode';
+        statusEl.textContent = I18N[state.language].signInSync;
+        headerBtn.textContent = state.language === 'id' ? 'Masuk' : 'Sign In';
+      }
+    }
+
+    // ==================== AUTH MODAL & HANDLERS ====================
+    window.openAuthOrProfileModal = function() {
+      if (state.user && !state.user.isAnonymous) {
+        const displayName = state.user.displayName || state.user.email?.split('@')[0] || 'RYNTAX User';
+        document.getElementById('profile-modal-avatar').textContent = displayName.substring(0, 2).toUpperCase();
+        document.getElementById('profile-modal-name').textContent = displayName;
+        document.getElementById('profile-modal-email').textContent = state.user.email || '';
+        document.getElementById('profile-modal-uid').textContent = `UID: ${state.user.uid}`;
+        document.getElementById('profile-edit-name').value = displayName;
+        openModal('profile-modal');
+      } else {
+        switchAuthTab('login');
+        openModal('auth-modal');
+      }
+    };
+
+    window.switchAuthTab = function(tab) {
+      state.authTab = tab;
+      document.getElementById('auth-error-box').classList.add('hidden');
+      document.getElementById('auth-success-box').classList.add('hidden');
+
+      const tabLogin = document.getElementById('tab-login');
+      const tabReg = document.getElementById('tab-register');
+      const nameField = document.getElementById('auth-name-field');
+      const passField = document.getElementById('auth-password-field');
+      const title = document.getElementById('auth-modal-title');
+      const subtitle = document.getElementById('auth-modal-subtitle');
+      const submitBtn = document.getElementById('auth-submit-btn');
+
+      tabLogin.className = "py-2 rounded-lg text-xs font-semibold transition-all";
+      tabReg.className = "py-2 rounded-lg text-xs font-semibold transition-all";
+      tabLogin.style.color = "var(--text-secondary)";
+      tabReg.style.color = "var(--text-secondary)";
+
+      if (tab === 'login') {
+        tabLogin.classList.add('brand-gradient-bg', 'text-white');
+        tabLogin.style.color = "#FFFFFF";
+        nameField.classList.add('hidden');
+        passField.classList.remove('hidden');
+        title.textContent = "Masuk ke RYNTAX AI";
+        subtitle.textContent = "Sinkronkan riwayat percakapan Anda di semua perangkat.";
+        submitBtn.textContent = "Masuk Sekarang";
+      } else if (tab === 'register') {
+        tabReg.classList.add('brand-gradient-bg', 'text-white');
+        tabReg.style.color = "#FFFFFF";
+        nameField.classList.remove('hidden');
+        passField.classList.remove('hidden');
+        title.textContent = "Buat Akun RYNTAX AI";
+        subtitle.textContent = "Daftar gratis untuk menyimpan seluruh riwayat AI Anda.";
+        submitBtn.textContent = "Daftar Akun";
+      } else if (tab === 'forgot') {
+        nameField.classList.add('hidden');
+        passField.classList.add('hidden');
+        title.textContent = "Reset Password";
+        subtitle.textContent = "Masukkan email terdaftar untuk menerima tautan pemulihan.";
+        submitBtn.textContent = "Kirim Link Reset Password";
+      }
+    };
+
+    window.handleAuthSubmit = async function(e) {
+      e.preventDefault();
+      const errBox = document.getElementById('auth-error-box');
+      const okBox = document.getElementById('auth-success-box');
+      errBox.classList.add('hidden');
+      okBox.classList.add('hidden');
+
+      if (!state.auth) {
+        errBox.textContent = "Layanan autentikasi belum terkonfigurasi di lingkungan ini.";
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const fullName = document.getElementById('auth-name').value.trim();
+      const submitBtn = document.getElementById('auth-submit-btn');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Memproses...";
+
+      try {
+        if (state.authTab === 'login') {
+          await signInWithEmailAndPassword(state.auth, email, password);
+          closeModal('auth-modal');
+          showToast("Berhasil masuk ke RYNTAX AI!", "success");
+        } else if (state.authTab === 'register') {
+          if (password.length < 6) throw new Error("Password minimal 6 karakter.");
+          const cred = await createUserWithEmailAndPassword(state.auth, email, password);
+          if (fullName) {
+            await updateProfile(cred.user, { displayName: fullName });
+            updateUserUI(cred.user);
+          }
+          closeModal('auth-modal');
+          showToast("Akun berhasil dibuat!", "success");
+        } else if (state.authTab === 'forgot') {
+          await sendPasswordResetEmail(state.auth, email);
+          okBox.textContent = "Tautan reset password telah dikirim ke email Anda.";
+          okBox.classList.remove('hidden');
+        }
+      } catch (err) {
+        let msg = err.message || "Terjadi kesalahan autentikasi.";
+        if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') msg = "Email atau password salah.";
+        if (err.code === 'auth/email-already-in-use') msg = "Email ini sudah terdaftar. Silakan login.";
+        if (err.code === 'auth/operation-not-allowed') msg = "Provider Email/Password belum diaktifkan di konsol Firebase proyek ini.";
+        errBox.textContent = msg;
+        errBox.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    };
+
+    window.handleUpdateProfile = async function(e) {
+      e.preventDefault();
+      const newName = document.getElementById('profile-edit-name').value.trim();
+      if (!newName || !state.user || !state.auth) return;
+      try {
+        await updateProfile(state.user, { displayName: newName });
+        updateUserUI(state.user);
+        document.getElementById('profile-modal-name').textContent = newName;
+        document.getElementById('profile-modal-avatar').textContent = newName.substring(0, 2).toUpperCase();
+        showToast("Nama profil diperbarui!", "success");
+      } catch (err) {
+        showToast("Gagal memperbarui profil.", "error");
+      }
+    };
+
+    window.handleLogout = async function() {
+      if (!state.auth) return;
+      try {
+        await signOut(state.auth);
+        await signInAnonymously(state.auth);
+        closeModal('profile-modal');
+        showToast("Anda telah keluar (mode Guest aktif).", "info");
+      } catch (err) {
+        showToast("Gagal logout.", "error");
+      }
+    };
+
+    // ==================== GEMINI API INTEGRATION ====================
+    async function callGeminiAPI({ model, contents, systemInstruction, signal }) {
+      const apiKey = ""; // Provided automatically at runtime
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+      const payload = {
+        contents,
+        systemInstruction: {
+          parts: [{ text: systemInstruction }]
+        }
+      };
+
+      const maxRetries = 3;
+      let delay = 1000;
+
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal
+          });
+
+          if (!response.ok) {
+            // If a secondary model ID is unavailable in this environment, automatically fall back to gemini-3-flash-preview
+            if ((response.status === 404 || response.status === 400) && model !== 'gemini-3-flash-preview') {
+              return await callGeminiAPI({
+                model: 'gemini-3-flash-preview',
+                contents,
+                systemInstruction,
+                signal
+              });
+            }
+
+            if ((response.status === 429 || response.status >= 500) && attempt < maxRetries) {
+              await new Promise((r) => setTimeout(r, delay));
+              delay *= 2;
+              continue;
+            }
+
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData?.error?.message || `API Error (${response.status})`);
+          }
+
+          const result = await response.json();
+          const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!text) {
+            throw new Error("Respons AI kosong atau diblokir oleh filter keamanan.");
+          }
+          return text;
+        } catch (err) {
+          if (err.name === 'AbortError') throw err;
+          if (attempt === maxRetries) throw err;
+          await new Promise((r) => setTimeout(r, delay));
+          delay *= 2;
+        }
+      }
+    }
+
+    // ==================== CONVERSATION & MESSAGE FLOW ====================
+    function getActiveChat() {
+      return state.chats.find((c) => c.id === state.activeChatId) || null;
+    }
+
+    window.createNewChat = function() {
+      if (state.isGenerating) stopGeneration();
+      state.activeChatId = null;
+      state.editingMessageIndex = null;
+      clearAttachments();
+      renderChatList();
+      renderActiveConversation();
+      if (window.innerWidth < 1024) toggleSidebar(false);
+      document.getElementById('chat-input').focus();
+    };
+
+    window.selectChat = function(chatId) {
+      if (state.isGenerating) stopGeneration();
+      state.activeChatId = chatId;
+      state.editingMessageIndex = null;
+      renderChatList();
+      renderActiveConversation();
+      if (window.innerWidth < 1024) toggleSidebar(false);
+    };
+
+    window.useStarterPrompt = function(mode, promptText) {
+      setAssistantMode(mode);
+      const input = document.getElementById('chat-input');
+      input.value = promptText;
+      autoResizeTextarea(input);
+      sendMessage();
+    };
+
+    window.handleInputKeydown = function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!state.isGenerating) {
+          sendMessage();
+        }
+      }
+    };
+
+    window.handleSendOrStop = function() {
+      if (state.isGenerating) {
+        stopGeneration();
+      } else {
+        sendMessage();
+      }
+    };
+
+    function stopGeneration() {
+      if (state.abortController) {
+        state.abortController.abort();
+        state.abortController = null;
+      }
+      state.isGenerating = false;
+      updateSendButtonUI(false);
+      renderActiveConversation();
+      showToast("Generasi jawaban dihentikan.", "info");
+    }
+
+    window.sendMessage = async function(overrideText = null) {
+      if (state.isGenerating) return;
+
+      const inputEl = document.getElementById('chat-input');
+      const rawText = overrideText !== null ? overrideText : inputEl.value.trim();
+      const hasImage = Boolean(state.attachments.image);
+      const hasDoc = Boolean(state.attachments.doc);
+
+      if (!rawText && !hasImage && !hasDoc) {
+        return; // Prevent sending empty message
+      }
+
+      // Ensure active chat exists
+      let chat = getActiveChat();
+      if (!chat) {
+        const newId = 'chat_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+        const autoTitle = rawText
+          ? (rawText.length > 42 ? rawText.substring(0, 42) + '...' : rawText)
+          : (hasImage ? `Analisis Gambar: ${state.attachments.image.name}` : `Analisis Dokumen: ${state.attachments.doc.name}`);
+
+        chat = {
+          id: newId,
+          title: autoTitle,
+          updatedAt: Date.now(),
+          messages: []
+        };
+        state.chats.unshift(chat);
+        state.activeChatId = newId;
+      }
+
+      // Build user message object
+      const userPromptText = rawText || (hasImage ? "Tolong analisis gambar ini secara detail." : "Tolong ringkas dan analisis dokumen terlampir ini.");
+      const userMsg = {
+        role: 'user',
+        text: userPromptText,
+        timestamp: Date.now(),
+        imageBase64: hasImage ? state.attachments.image.base64 : null,
+        imageMime: hasImage ? state.attachments.image.mimeType : null,
+        imagePreview: hasImage ? state.attachments.image.previewUrl : null,
+        imageName: hasImage ? state.attachments.image.name : null,
+        hasImage: hasImage,
+        docName: hasDoc ? state.attachments.doc.name : null,
+        docContent: hasDoc ? state.attachments.doc.content : null
+      };
+
+      chat.messages.push(userMsg);
+      chat.updatedAt = Date.now();
+
+      // Clear input & attachments
+      if (overrideText === null) {
+        inputEl.value = '';
+        autoResizeTextarea(inputEl);
+      }
+      clearAttachments();
+      renderChatList();
+      renderActiveConversation(true);
+
+      await executeAIResponse(chat);
+    };
+
+    async function executeAIResponse(chat) {
+      state.isGenerating = true;
+      state.abortController = new AbortController();
+      updateSendButtonUI(true);
+      renderActiveConversation(true);
+
+      try {
+        // Construct multi-turn Gemini contents array
+        const contents = chat.messages
+          .filter((m) => !m.isError)
+          .map((m) => {
+            const parts = [];
+            let textContent = m.text;
+            if (m.docContent) {
+              textContent += `\n\n--- ISI DOKUMEN (${m.docName}) ---\n${m.docContent.substring(0, 28000)}\n--- AKHIR DOKUMEN ---`;
+            }
+            parts.push({ text: textContent });
+
+            if (m.imageBase64 && m.imageMime) {
+              parts.push({
+                inlineData: {
+                  mimeType: m.imageMime,
+                  data: m.imageBase64
+                }
+              });
+            }
+
+            return {
+              role: m.role === 'user' ? 'user' : 'model',
+              parts
+            };
+          });
+
+        const sysPrompt = SYSTEM_PROMPTS[state.assistantMode]?.[state.language] || SYSTEM_PROMPTS.general.id;
+        const aiText = await callGeminiAPI({
+          model: state.model,
+          contents,
+          systemInstruction: sysPrompt,
+          signal: state.abortController.signal
+        });
+
+        chat.messages.push({
+          role: 'model',
+          text: aiText,
+          model: state.modelLabel,
+          timestamp: Date.now()
+        });
+        chat.updatedAt = Date.now();
+        await persistChatToFirestore(chat);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          chat.messages.push({
+            role: 'model',
+            text: err.message || "Gagal terhubung ke RYNTAX AI. Periksa koneksi internet Anda.",
+            isError: true,
+            timestamp: Date.now()
+          });
+        }
+      } finally {
+        state.isGenerating = false;
+        state.abortController = null;
+        updateSendButtonUI(false);
+        renderChatList();
+        renderActiveConversation(true);
+      }
+    }
+
+    window.regenerateLastResponse = async function() {
+      if (state.isGenerating) return;
+      const chat = getActiveChat();
+      if (!chat || chat.messages.length === 0) return;
+
+      // Remove trailing model message(s)
+      while (chat.messages.length > 0 && chat.messages[chat.messages.length - 1].role === 'model') {
+        chat.messages.pop();
+      }
+      if (chat.messages.length === 0) return;
+
+      await executeAIResponse(chat);
+    };
+
+    window.startEditMessage = function(idx) {
+      if (state.isGenerating) return;
+      state.editingMessageIndex = idx;
+      renderActiveConversation(false);
+    };
+
+    window.cancelEditMessage = function() {
+      state.editingMessageIndex = null;
+      renderActiveConversation(false);
+    };
+
+    window.saveEditedMessage = async function(idx) {
+      const chat = getActiveChat();
+      if (!chat) return;
+      const editArea = document.getElementById(`edit-textarea-${idx}`);
+      const updatedText = editArea?.value.trim();
+      if (!updatedText) {
+        showToast("Pesan tidak boleh kosong.", "warning");
+        return;
+      }
+
+      chat.messages[idx].text = updatedText;
+      chat.messages[idx].timestamp = Date.now();
+      // Truncate conversation after edited turn
+      chat.messages = chat.messages.slice(0, idx + 1);
+      state.editingMessageIndex = null;
+      chat.updatedAt = Date.now();
+
+      renderActiveConversation(true);
+      await executeAIResponse(chat);
+    };
+
+    // ==================== RENDERING UI ====================
+    function renderChatList() {
+      const listEl = document.getElementById('chat-history-list');
+      const countBadge = document.getElementById('chat-count-badge');
+      const query = document.getElementById('sidebar-search').value.trim().toLowerCase();
+
+      const filtered = state.chats.filter((c) => {
+        if (!query) return true;
+        const inTitle = (c.title || '').toLowerCase().includes(query);
+        const inMsgs = (c.messages || []).some((m) => (m.text || '').toLowerCase().includes(query));
+        return inTitle || inMsgs;
+      });
+
+      countBadge.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `
+          <div class="text-center py-8 px-3 text-xs" style="color: var(--text-secondary);">
+            ${query ? 'Tidak ada percakapan yang cocok.' : 'Belum ada riwayat percakapan.'}
+          </div>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map((chat) => {
+        const isActive = chat.id === state.activeChatId;
+        return `
+          <div onclick="selectChat('${chat.id}')" class="group relative flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition-all ${isActive ? 'bg-[#3978FF]/18 border border-[#3978FF]/40' : 'hover:bg-white/5 border border-transparent'}">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+              <svg class="w-4 h-4 shrink-0 ${isActive ? 'text-[#3978FF]' : 'opacity-60'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+              </svg>
+              <span id="chat-title-${chat.id}" class="text-xs font-medium truncate">${escapeHTML(chat.title || 'New Chat')}</span>
+            </div>
+
+            <div class="flex items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0" onclick="event.stopPropagation()">
+              <button onclick="promptRenameChat('${chat.id}')" class="p-1.5 rounded-lg hover:bg-white/10 text-xs" style="color: var(--text-secondary);" title="Rename">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              </button>
+              <button onclick="confirmDeleteChat('${chat.id}')" class="p-1.5 rounded-lg hover:bg-rose-500/20 text-rose-400 text-xs" title="Hapus">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.promptRenameChat = function(chatId) {
+      const chat = state.chats.find((c) => c.id === chatId);
+      if (!chat) return;
+      const titleSpan = document.getElementById(`chat-title-${chatId}`);
+      if (!titleSpan) return;
+
+      const currentTitle = chat.title;
+      titleSpan.outerHTML = `<input id="rename-input-${chatId}" type="text" value="${escapeHTML(currentTitle)}"
+        onclick="event.stopPropagation()"
+        onkeydown="if(event.key==='Enter'){finishRenameChat('${chatId}', this.value)} else if(event.key==='Escape'){renderChatList()}"
+        onblur="finishRenameChat('${chatId}', this.value)"
+        class="w-full bg-black/30 text-xs px-2 py-0.5 rounded border border-[#3978FF] focus:outline-none" />`;
+
+      const inp = document.getElementById(`rename-input-${chatId}`);
+      if (inp) {
+        inp.focus();
+        inp.select();
+      }
+    };
+
+    window.finishRenameChat = async function(chatId, newVal) {
+      const chat = state.chats.find((c) => c.id === chatId);
+      if (!chat) return;
+      const trimmed = (newVal || '').trim();
+      if (trimmed && trimmed !== chat.title) {
+        chat.title = trimmed;
+        chat.updatedAt = Date.now();
+        await persistChatToFirestore(chat);
+        showToast("Nama percakapan diperbarui.", "success");
+      }
+      renderChatList();
+    };
+
+    window.confirmDeleteChat = function(chatId) {
+      document.getElementById('confirm-title').textContent = "Hapus Percakapan?";
+      document.getElementById('confirm-message').textContent = "Riwayat percakapan ini akan dihapus secara permanen.";
+      const yesBtn = document.getElementById('confirm-yes-btn');
+      yesBtn.onclick = async () => {
+        state.chats = state.chats.filter((c) => c.id !== chatId);
+        if (state.activeChatId === chatId) {
+          state.activeChatId = null;
+        }
+        await deleteChatFromFirestore(chatId);
+        closeModal('confirm-modal');
+        renderChatList();
+        renderActiveConversation();
+        showToast("Percakapan dihapus.", "info");
+      };
+      openModal('confirm-modal');
+    };
+
+    function renderActiveConversation(scrollToBottom = false) {
+      const welcomeEl = document.getElementById('welcome-screen');
+      const messagesEl = document.getElementById('messages-list');
+      const chat = getActiveChat();
+
+      if (!chat || chat.messages.length === 0) {
+        welcomeEl.classList.remove('hidden');
+        messagesEl.classList.add('hidden');
+        messagesEl.innerHTML = '';
+        return;
+      }
+
+      welcomeEl.classList.add('hidden');
+      messagesEl.classList.remove('hidden');
+
+      let html = chat.messages.map((msg, idx) => {
+        const isLastModel = msg.role === 'model' && idx === chat.messages.length - 1;
+
+        if (msg.role === 'user') {
+          if (state.editingMessageIndex === idx) {
+            return `
+              <div class="flex justify-end animate-msg">
+                <div class="w-full max-w-xl p-3.5 rounded-2xl glass-surface border border-[#3978FF]">
+                  <textarea id="edit-textarea-${idx}" rows="3" class="w-full bg-transparent text-sm focus:outline-none resize-none" style="color: var(--text-primary);">${escapeHTML(msg.text)}</textarea>
+                  <div class="flex justify-end gap-2 mt-2 pt-2 border-t" style="border-color: var(--border-subtle);">
+                    <button onclick="cancelEditMessage()" class="px-3 py-1.5 rounded-xl text-xs hover:bg-white/5">Batal</button>
+                    <button onclick="saveEditedMessage(${idx})" class="px-3.5 py-1.5 rounded-xl brand-gradient-bg text-white text-xs font-semibold">Simpan & Kirim Ulang</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="group flex flex-col items-end animate-msg">
+              <div style="background: var(--user-bubble); border-color: var(--user-bubble-border);" class="max-w-[88%] sm:max-w-[78%] rounded-2xl rounded-tr-sm px-4 py-3 border shadow-xs">
+                ${msg.imagePreview ? `<img src="${msg.imagePreview}" alt="Uploaded image" class="max-h-56 rounded-xl mb-2.5 border border-white/10 object-contain" />` : (msg.hasImage ? `<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#3978FF]/20 text-[#3978FF] text-xs mb-2">🖼️ ${escapeHTML(msg.imageName || 'Gambar terlampir')}</div>` : '')}
+                ${msg.docName ? `<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#875BFF]/20 text-[#875BFF] text-xs mb-2">📄 ${escapeHTML(msg.docName)}</div>` : ''}
+                <div class="text-sm leading-relaxed whitespace-pre-wrap break-words">${escapeHTML(msg.text)}</div>
+              </div>
+              <div class="mt-1 flex items-center gap-2 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                <button onclick="startEditMessage(${idx})" class="px-2 py-0.5 rounded-lg text-[11px] hover:bg-white/5 flex items-center gap-1" style="color: var(--text-secondary);">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  <span>Edit</span>
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          // Model Message (or Error Card)
+          if (msg.isError) {
+            return `
+              <div class="flex items-start gap-3 animate-msg">
+                <div class="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center shrink-0 font-bold text-xs">!</div>
+                <div class="flex-1 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30">
+                  <div class="text-xs font-semibold text-rose-400 mb-1">Koneksi AI Terkendala</div>
+                  <p class="text-xs leading-relaxed mb-3" style="color: var(--text-primary);">${escapeHTML(msg.text)}</p>
+                  <button onclick="regenerateLastResponse()" class="px-3 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-semibold hover:bg-rose-600 transition-colors">
+                    Coba Lagi (Retry)
+                  </button>
+                </div>
+              </div>
+            `;
+          }
+
+          const renderedHTML = renderMarkdownWithCodeButtons(msg.text);
+          return `
+            <div class="flex items-start gap-3 animate-msg">
+              <!-- Futuristic RYNTAX AI Avatar -->
+              <div class="w-8 h-8 rounded-xl brand-gradient-bg p-[1.5px] shrink-0 mt-0.5 shadow-md shadow-[#3978FF]/20">
+                <div class="w-full h-full rounded-[10.5px] bg-[#0B1020] flex items-center justify-center font-display font-extrabold text-xs brand-gradient-text">
+                  R
+                </div>
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-xs font-bold font-display">RYNTAX AI</span>
+                  ${msg.model ? `<span class="text-[10px] px-2 py-0.5 rounded-full glass-surface" style="color: var(--text-secondary);">${escapeHTML(msg.model)}</span>` : ''}
+                </div>
+
+                <div class="markdown-body">${renderedHTML}</div>
+
+                <!-- Response Action Controls -->
+                <div class="mt-2.5 flex items-center gap-2 flex-wrap">
+                  <button onclick="copyMessageText(${idx})" class="px-2.5 py-1 rounded-lg glass-surface hover:border-[#3978FF]/50 text-[11px] font-medium flex items-center gap-1.5 transition-colors" style="color: var(--text-secondary);">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <span>Salin</span>
+                  </button>
+                  ${isLastModel ? `
+                    <button onclick="regenerateLastResponse()" class="px-2.5 py-1 rounded-lg glass-surface hover:border-[#875BFF]/50 text-[11px] font-medium flex items-center gap-1.5 transition-colors" style="color: var(--text-secondary);">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                      <span>Regenerate</span>
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
+
+      // Append AI Thinking Indicator if currently generating
+      if (state.isGenerating) {
+        html += `
+          <div class="flex items-start gap-3 animate-msg">
+            <div class="w-8 h-8 rounded-xl brand-gradient-bg flex items-center justify-center shrink-0 animate-orb text-white font-display font-extrabold text-xs">
+              R
+            </div>
+            <div class="px-4 py-3 rounded-2xl glass-surface flex items-center gap-3">
+              <div class="flex items-center gap-1">
+                <span class="thinking-dot w-2 h-2 rounded-full bg-[#3978FF]"></span>
+                <span class="thinking-dot w-2 h-2 rounded-full bg-[#606BFF]"></span>
+                <span class="thinking-dot w-2 h-2 rounded-full bg-[#875BFF]"></span>
+              </div>
+              <span class="text-xs font-medium" style="color: var(--text-secondary);">Ryntax AI sedang berpikir...</span>
+            </div>
+          </div>
+        `;
+      }
+
+      messagesEl.innerHTML = html;
+
+      if (scrollToBottom) {
+        const container = document.getElementById('chat-scroll-container');
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    function renderMarkdownWithCodeButtons(markdownText) {
+      const rawHtml = marked.parse(markdownText || '');
+      const cleanHtml = DOMPurify.sanitize(rawHtml);
+
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = cleanHtml;
+
+      const preBlocks = tempDiv.querySelectorAll('pre');
+      preBlocks.forEach((pre, index) => {
+        const codeEl = pre.querySelector('code');
+        let lang = 'code';
+        if (codeEl && codeEl.className) {
+          const match = codeEl.className.match(/language-([a-zA-Z0-9_-]+)/);
+          if (match) lang = match[1];
+        }
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block-wrapper';
+
+        const header = document.createElement('div');
+        header.className = 'code-block-header';
+        header.innerHTML = `
+          <span class="uppercase tracking-wider font-semibold text-[11px]">${escapeHTML(lang)}</span>
+          <button type="button" onclick="copyCodeBlock(this)" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-[11px] flex items-center gap-1 transition-colors">
+            <span>Copy</span>
+          </button>
+        `;
+
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(header);
+        wrapper.appendChild(pre);
+      });
+
+      return tempDiv.innerHTML;
+    }
+
+    // ==================== ATTACHMENTS (IMAGE & PDF/TEXT DOCS) ====================
+    window.handleImageUpload = function(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (file.size > 8 * 1024 * 1024) {
+        showToast("Ukuran gambar maksimal 8MB.", "warning");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        const base64 = dataUrl.split(',')[1];
+        state.attachments.image = {
+          name: file.name,
+          mimeType: file.type || 'image/png',
+          base64,
+          previewUrl: dataUrl
+        };
+        renderAttachmentTray();
+        showToast("Gambar siap dianalisis.", "success");
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    };
+
+    window.handleDocUpload = async function(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      try {
+        let extractedText = '';
+        if (file.name.toLowerCase().endsWith('.pdf')) {
+          if (!window.pdfjsLib) {
+            throw new Error("Library pembaca PDF belum siap.");
+          }
+          showToast("Mengekstrak teks PDF...", "info");
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          const maxPages = Math.min(pdf.numPages, 25);
+          for (let p = 1; p <= maxPages; p++) {
+            const page = await pdf.getPage(p);
+            const content = await page.getTextContent();
+            const strings = content.items.map((item) => item.str);
+            extractedText += `\n[Halaman ${p}]\n` + strings.join(' ');
+          }
+        } else {
+          extractedText = await file.text();
+        }
+
+        if (!extractedText.trim()) {
+          showToast("Dokumen kosong atau tidak berisi teks terbaca.", "warning");
+          return;
+        }
+
+        state.attachments.doc = {
+          name: file.name,
+          content: extractedText,
+          charCount: extractedText.length
+        };
+        renderAttachmentTray();
+        showToast(`Dokumen "${file.name}" berhasil dimuat.`, "success");
+      } catch (err) {
+        showToast("Gagal membaca dokumen: " + err.message, "error");
+      }
+      e.target.value = '';
+    };
+
+    function renderAttachmentTray() {
+      const tray = document.getElementById('attachment-tray');
+      const items = [];
+
+      if (state.attachments.image) {
+        items.push(`
+          <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl glass-surface border border-[#3978FF]/40 text-xs">
+            <img src="${state.attachments.image.previewUrl}" class="w-7 h-7 rounded-lg object-cover" />
+            <span class="truncate max-w-[140px] font-medium">${escapeHTML(state.attachments.image.name)}</span>
+            <button onclick="removeAttachment('image')" class="p-0.5 rounded-full hover:bg-white/10 text-rose-400">✕</button>
+          </div>
+        `);
+      }
+
+      if (state.attachments.doc) {
+        items.push(`
+          <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl glass-surface border border-[#875BFF]/40 text-xs">
+            <span class="text-base">📄</span>
+            <div class="min-w-0">
+              <div class="truncate max-w-[150px] font-medium">${escapeHTML(state.attachments.doc.name)}</div>
+              <div class="text-[10px]" style="color: var(--text-secondary);">${state.attachments.doc.charCount.toLocaleString()} karakter</div>
+            </div>
+            <button onclick="removeAttachment('doc')" class="p-0.5 rounded-full hover:bg-white/10 text-rose-400">✕</button>
+          </div>
+        `);
+      }
+
+      if (items.length === 0) {
+        tray.classList.add('hidden');
+        tray.innerHTML = '';
+      } else {
+        tray.classList.remove('hidden');
+        tray.innerHTML = items.join('');
+      }
+    }
+
+    window.removeAttachment = function(type) {
+      state.attachments[type] = null;
+      renderAttachmentTray();
+    };
+
+    function clearAttachments() {
+      state.attachments.image = null;
+      state.attachments.doc = null;
+      renderAttachmentTray();
+    }
+
+    // ==================== VOICE RECOGNITION (WEB SPEECH API) ====================
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return;
+
+      const micBtn = document.getElementById('mic-btn');
+      micBtn.classList.remove('hidden');
+
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = state.language === 'id' ? 'id-ID' : 'en-US';
+
+      recognition.onstart = () => {
+        state.isRecording = true;
+        micBtn.classList.add('bg-rose-500/20', 'ring-2', 'ring-rose-500');
+        document.getElementById('mic-status-text').textContent = "Mendengarkan...";
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        const inputEl = document.getElementById('chat-input');
+        inputEl.value = transcript;
+        autoResizeTextarea(inputEl);
+      };
+
+      recognition.onerror = () => {
+        stopVoiceRecordingUI();
+        showToast("Input suara dihentikan atau izin mikrofon ditolak.", "warning");
+      };
+
+      recognition.onend = () => {
+        stopVoiceRecordingUI();
+      };
+
+      state.recognition = recognition;
+    }
+
+    function stopVoiceRecordingUI() {
+      state.isRecording = false;
+      const micBtn = document.getElementById('mic-btn');
+      micBtn.classList.remove('bg-rose-500/20', 'ring-2', 'ring-rose-500');
+      document.getElementById('mic-status-text').textContent = state.language === 'id' ? "Suara" : "Voice";
+    }
+
+    window.toggleVoiceInput = function() {
+      if (!state.recognition) return;
+      if (state.isRecording) {
+        state.recognition.stop();
+      } else {
+        state.recognition.lang = state.language === 'id' ? 'id-ID' : 'en-US';
+        state.recognition.start();
+      }
+    };
+
+    // ==================== CLIPBOARD, SHARE & EXPORT ====================
+    function copyTextToClipboard(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        return true;
+      } catch (e) {
+        return false;
+      } finally {
+        document.body.removeChild(ta);
+      }
+    }
+
+    window.copyMessageText = function(idx) {
+      const chat = getActiveChat();
+      if (!chat || !chat.messages[idx]) return;
+      if (copyTextToClipboard(chat.messages[idx].text)) {
+        showToast("Jawaban disalin ke clipboard!", "success");
+      }
+    };
+
+    window.copyCodeBlock = function(btn) {
+      const wrapper = btn.closest('.code-block-wrapper');
+      const codeText = wrapper?.querySelector('code')?.innerText || '';
+      if (copyTextToClipboard(codeText)) {
+        const label = btn.querySelector('span');
+        label.textContent = 'Copied!';
+        btn.classList.add('text-emerald-400');
+        setTimeout(() => {
+          label.textContent = 'Copy';
+          btn.classList.remove('text-emerald-400');
+        }, 2000);
+      }
+    };
+
+    window.shareConversation = async function() {
+      const chat = getActiveChat();
+      if (!chat || chat.messages.length === 0) {
+        showToast("Belum ada percakapan untuk dibagikan.", "warning");
+        return;
+      }
+      const transcript = formatTranscript(chat);
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `RYNTAX AI — ${chat.title}`,
+            text: transcript
+          });
+          return;
+        } catch (_) {}
+      }
+      if (copyTextToClipboard(transcript)) {
+        showToast("Transkrip percakapan disalin untuk dibagikan!", "success");
+      }
+    };
+
+    window.exportChatTXT = function() {
+      closeAllDropdowns();
+      const chat = getActiveChat();
+      if (!chat || chat.messages.length === 0) {
+        showToast("Mulai percakapan terlebih dahulu untuk export.", "warning");
+        return;
+      }
+      const transcript = formatTranscript(chat);
+      const blob = new Blob([transcript], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ryntax-ai-${new Date().toISOString().slice(0, 10)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("File .TXT berhasil diunduh!", "success");
+    };
+
+    window.exportChatPDF = function() {
+      closeAllDropdowns();
+      const chat = getActiveChat();
+      if (!chat || chat.messages.length === 0) {
+        showToast("Mulai percakapan terlebih dahulu untuk export PDF.", "warning");
+        return;
+      }
+      const printEl = document.getElementById('print-container');
+      printEl.innerHTML = `
+        <div style="border-bottom: 2px solid #3978FF; padding-bottom: 12px; margin-bottom: 20px;">
+          <h1 style="margin: 0; font-size: 20px; color: #0B1020;">RYNTAX AI — Transkrip Percakapan</h1>
+          <p style="margin: 4px 0 0; font-size: 12px; color: #475569;">Judul: ${escapeHTML(chat.title)} • Diekspor pada ${new Date().toLocaleString()}</p>
+        </div>
+        ${chat.messages.map((m) => `
+          <div style="margin-bottom: 16px; padding: 12px; border-radius: 8px; background: ${m.role === 'user' ? '#F1F5F9' : '#FFFFFF'}; border: 1px solid #E2E8F0;">
+            <div style="font-weight: 700; font-size: 12px; color: ${m.role === 'user' ? '#3978FF' : '#875BFF'}; margin-bottom: 6px;">
+              ${m.role === 'user' ? 'PENGGUNA' : 'RYNTAX AI'}
+            </div>
+            <div style="font-size: 13px; line-height: 1.6; white-space: pre-wrap;">${escapeHTML(m.text)}</div>
+          </div>
+        `).join('')}
+      `;
+      window.print();
+    };
+
+    function formatTranscript(chat) {
+      let out = `RYNTAX AI — Your Intelligence, Without Limits.\nJudul: ${chat.title}\nTanggal: ${new Date().toLocaleString()}\n==========================================\n\n`;
+      chat.messages.forEach((m) => {
+        out += `[${m.role === 'user' ? 'USER' : 'RYNTAX AI'}]\n${m.text}\n\n------------------------------------------\n\n`;
+      });
+      return out;
+    }
+
+    // ==================== CONTROLS, THEME, MODEL & SIDEBAR ====================
+    window.toggleSidebar = function(forceState = null) {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const isDesktop = window.innerWidth >= 1024;
+
+      if (isDesktop) {
+        if (forceState === false) {
+          sidebar.classList.add('lg:hidden');
+        } else if (forceState === true) {
+          sidebar.classList.remove('lg:hidden');
+        } else {
+          sidebar.classList.toggle('lg:hidden');
+        }
+      } else {
+        const currentlyOpen = !sidebar.classList.contains('-translate-x-full');
+        const nextOpen = forceState !== null ? forceState : !currentlyOpen;
+        if (nextOpen) {
+          sidebar.classList.remove('-translate-x-full');
+          backdrop.classList.remove('hidden');
+        } else {
+          sidebar.classList.add('-translate-x-full');
+          backdrop.classList.add('hidden');
+        }
+      }
+    };
+
+    window.toggleTheme = function() {
+      const htmlEl = document.documentElement;
+      const isDark = htmlEl.classList.contains('dark');
+      if (isDark) {
+        htmlEl.classList.remove('dark');
+        htmlEl.classList.add('light');
+        state.theme = 'light';
+        document.getElementById('icon-sun').classList.remove('hidden');
+        document.getElementById('icon-moon').classList.add('hidden');
+        document.getElementById('settings-theme-label').textContent = 'Light Mode';
+      } else {
+        htmlEl.classList.remove('light');
+        htmlEl.classList.add('dark');
+        state.theme = 'dark';
+        document.getElementById('icon-sun').classList.add('hidden');
+        document.getElementById('icon-moon').classList.remove('hidden');
+        document.getElementById('settings-theme-label').textContent = 'Dark Mode';
+      }
+    };
+
+    window.setLanguage = function(lang) {
+      state.language = lang;
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (I18N[lang][key]) el.innerHTML = I18N[lang][key];
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (I18N[lang][key]) el.placeholder = I18N[lang][key];
+      });
+      updateUserUI(state.user);
+      showToast(lang === 'id' ? "Bahasa diubah ke Bahasa Indonesia." : "Language switched to English.", "info");
+    };
+
+    window.setAssistantMode = function(mode) {
+      state.assistantMode = mode;
+      document.querySelectorAll('.mode-pill').forEach((pill) => {
+        const isMatch = pill.getAttribute('data-mode') === mode;
+        if (isMatch) {
+          pill.className = "mode-pill px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all brand-gradient-bg text-white shadow-xs";
+        } else {
+          pill.className = "mode-pill px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all glass-surface hover:border-[#3978FF]/50";
+        }
+      });
+    };
+
+    window.toggleModelMenu = function(e) {
+      e.stopPropagation();
+      document.getElementById('export-dropdown-menu').classList.add('hidden');
+      document.getElementById('model-dropdown-menu').classList.toggle('hidden');
+    };
+
+    window.toggleExportMenu = function(e) {
+      e.stopPropagation();
+      document.getElementById('model-dropdown-menu').classList.add('hidden');
+      document.getElementById('export-dropdown-menu').classList.toggle('hidden');
+    };
+
+    function closeAllDropdowns() {
+      document.getElementById('model-dropdown-menu').classList.add('hidden');
+      document.getElementById('export-dropdown-menu').classList.add('hidden');
+    }
+
+    document.addEventListener('click', closeAllDropdowns);
+
+    window.selectModel = function(modelId, label) {
+      state.model = modelId;
+      state.modelLabel = label;
+      document.getElementById('active-model-label').textContent = label;
+      document.getElementById('settings-model-select').value = modelId;
+
+      document.querySelectorAll('.model-option').forEach((opt) => {
+        const check = opt.querySelector('.model-check');
+        if (opt.getAttribute('data-model') === modelId) {
+          check.classList.remove('hidden');
+        } else {
+          check.classList.add('hidden');
+        }
+      });
+
+      closeAllDropdowns();
+      showToast(`Model aktif: ${label}`, "info");
+    };
+
+    window.selectModelFromSettings = function(modelId) {
+      const map = {
+        'gemini-3-flash-preview': 'Gemini 3 Flash',
+        'gemini-2.5-flash': 'Gemini 2.5 Flash',
+        'gemini-2.5-pro': 'Gemini 2.5 Pro',
+        'gemini-2.0-flash': 'Gemini 2.0 Flash'
+      };
+      selectModel(modelId, map[modelId] || modelId);
+    };
+
+    window.openSettingsModal = function() {
+      document.getElementById('settings-model-select').value = state.model;
+      document.getElementById('settings-lang-select').value = state.language;
+      openModal('settings-modal');
+    };
+
+    window.openModal = function(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      }
+    };
+
+    window.closeModal = function(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }
+    };
+
+    function updateSendButtonUI(isGenerating) {
+      const label = document.getElementById('send-btn-label');
+      const sendIcon = document.getElementById('send-icon');
+      const stopIcon = document.getElementById('stop-icon');
+
+      if (isGenerating) {
+        label.textContent = "Stop";
+        sendIcon.classList.add('hidden');
+        stopIcon.classList.remove('hidden');
+      } else {
+        label.textContent = I18N[state.language].send;
+        sendIcon.classList.remove('hidden');
+        stopIcon.classList.add('hidden');
+      }
+    }
+
+    window.autoResizeTextarea = function(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+    };
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'border-emerald-500/40 bg-emerald-950/90 text-emerald-200',
+        error: 'border-rose-500/40 bg-rose-950/90 text-rose-200',
+        warning: 'border-amber-500/40 bg-amber-950/90 text-amber-200',
+        info: 'border-[#3978FF]/40 bg-[#111827]/95 text-slate-100'
+      };
+      toast.className = `pointer-events-auto px-4 py-2.5 rounded-xl border shadow-xl backdrop-blur-md text-xs font-medium animate-msg ${colors[type] || colors.info}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 2800);
+    }
+
+    function escapeHTML(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Boot Application
+    window.addEventListener('DOMContentLoaded', () => {
+      initSpeechRecognition();
+      initFirebase();
+      renderChatList();
+    });
+  </script>
+</body>
+</html>
